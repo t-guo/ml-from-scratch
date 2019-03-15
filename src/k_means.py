@@ -23,15 +23,30 @@ class KMeans(object):
         self.centroids = None
 
     def _init_random_centroids(self, X):
-        n_samples, n_features = np.shape(X)
-        self.centroids = np.zeros((self.k, n_features))
+        n, m = np.shape(X)
+        self.centroids = np.zeros((self.k, m))
 
         if self.init == 'uniform':
             # Choose k centers uniformly at random from among the data points
-            self.centroids = X[np.random.choice(range(n_samples), self.k, replace=False)]
+            self.centroids = X[np.random.choice(range(n), self.k, replace=False)]
         elif self.init == 'k++':
-            # TODO: implement k++ initialization
-            self.centroids = X[np.random.choice(range(n_samples), self.k, replace=False)]
+            # Randomly pick a center
+            self.centroids[0] = X[np.random.choice(range(n), 1)]
+
+            # computer distance between center for each
+            for i in range(1, self.k):
+                distances = []
+                # find distance between each point to nearest center
+                for x in X:
+                    closest_dist = float('inf')
+                    for j in range(i):
+                        distance = calculations.euclidean_distance(x, self.centroids[j])
+                        if distance < closest_dist:
+                            closest_dist = distance
+                    distances.append(closest_dist)
+
+                # re-sample next center with probabilities proportional to shortest distance
+                self.centroids[i] = X[np.random.choice(range(n), 1, p=[d/sum(distances) for d in distances])]
 
     def _closest_centroid(self, sample):
         """ Return the index of the closest centroid to the sample """
@@ -50,13 +65,11 @@ class KMeans(object):
         :param X: np array of features
         :return: cluster indexes and centroids of clusters
         """
-
         # Initialize centroid, iteration number, and difference
         self._init_random_centroids(X)
         iter = 0
         diff = float('inf')
-
-        n_samples, n_features = np.shape(X)
+        n, m = np.shape(X)
 
         while iter <= self.max_iterations and diff > self.stopping_distance:
             # Assign samples to closet centroids
@@ -72,7 +85,7 @@ class KMeans(object):
                 raise Exception('algorithm not converging, some clusters have no members.')
 
             # Calculate new centroids and difference between previous centroids
-            new_centroids = np.zeros((self.k, n_features))
+            new_centroids = np.zeros((self.k, m))
 
             for j, centroid in enumerate(self.centroids):
                 new_centroids[j] = np.mean(X[np.array(cluster_labels) == j], axis=0)
@@ -83,12 +96,3 @@ class KMeans(object):
             iter += 1
 
         return cluster_labels
-
-
-if __name__ == "__main__":
-
-    X = np.array([[1, 2, 1, 2], [2, 3, 1, 3], [1, 2, 3, 4], [1, 2, 1, 2], [2, 3, 1, 3], [1, 2, 3, 4], [1, 2, 1, 3]])
-
-    kmeans = KMeans(k=2, max_iterations=20)
-    print(kmeans.fit(X))
-    print(kmeans.centroids)
