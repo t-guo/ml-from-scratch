@@ -15,11 +15,11 @@ class KMeans(object):
             raise Exception('max_iterations needs to be greater than 0.')
         if init not in ['uniform', 'k++']:
             raise Exception('init needs to be one of [\'uniform\', \'k++\'].')
+
         self.k = k
         self.init = init
         self.max_iterations = max_iterations
         self.stopping_distance = stopping_distance
-
         self.centroids = None
 
     def _init_random_centroids(self, X):
@@ -33,10 +33,10 @@ class KMeans(object):
             # Randomly pick a center
             self.centroids[0] = X[np.random.choice(range(n), 1)]
 
-            # computer distance between center for each
+            # Computer distance between center for each
             for i in range(1, self.k):
                 distances = []
-                # find distance between each point to nearest center
+                # Find distance between each point to nearest center
                 for x in X:
                     closest_dist = float('inf')
                     for j in range(i):
@@ -45,7 +45,7 @@ class KMeans(object):
                             closest_dist = distance
                     distances.append(closest_dist)
 
-                # re-sample next center with probabilities proportional to shortest distance
+                # Re-sample next center with probabilities proportional to shortest distance
                 self.centroids[i] = X[np.random.choice(range(n), 1, p=[d/sum(distances) for d in distances])]
 
     def _closest_centroid(self, sample):
@@ -61,7 +61,7 @@ class KMeans(object):
 
     def fit(self, X):
         """
-        Do Kmeans clustering
+        Do K-means clustering
         :param X: np array of features
         :return: cluster indexes and centroids of clusters
         """
