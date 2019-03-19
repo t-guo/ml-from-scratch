@@ -1,5 +1,5 @@
 import numpy as np
-from src.utils import calculations
+from src.utils import calculations, validations
 
 
 class KMeans(object):
@@ -21,6 +21,7 @@ class KMeans(object):
         self.max_iterations = max_iterations
         self.stopping_distance = stopping_distance
         self.centroids = None
+        self.fitted = False
 
     def _init_random_centroids(self, X):
         n, m = np.shape(X)
@@ -95,4 +96,16 @@ class KMeans(object):
 
             iter += 1
 
+        self.fitted = True
+
         return cluster_labels
+
+    def predict(self, x_pred):
+        validations.is_fitted(self, 'fitted')
+
+        y_pred = []
+
+        for x in x_pred:
+            y_pred.append(self._closest_centroid(x))
+
+        return y_pred
