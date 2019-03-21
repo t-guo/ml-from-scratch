@@ -6,11 +6,11 @@ class KMeans(object):
     """
     KMeans clustering
     """
-    def __init__(self, k=2, init='uniform', stopping_distance=0, max_iterations=500):
+    def __init__(self, k=2, init='uniform', precision=0, max_iterations=500):
         if not k > 0:
             raise Exception('k needs to be greater than 0.')
-        if not stopping_distance >= 0:
-            raise Exception('stopping_distance needs to be greater than or equal to 0.')
+        if not precision >= 0:
+            raise Exception('precision needs to be greater than or equal to 0.')
         if not max_iterations > 0:
             raise Exception('max_iterations needs to be greater than 0.')
         if init not in ['uniform', 'k++']:
@@ -19,7 +19,7 @@ class KMeans(object):
         self.k = k
         self.init = init
         self.max_iterations = max_iterations
-        self.stopping_distance = stopping_distance
+        self.precision = precision
         self.centroids = None
         self.fitted = False
 
@@ -72,7 +72,7 @@ class KMeans(object):
         diff = float('inf')
         n, m = np.shape(X)
 
-        while iter <= self.max_iterations and diff > self.stopping_distance:
+        while iter <= self.max_iterations and diff > self.precision:
             # Assign samples to closet centroids
             cluster_labels = []
 

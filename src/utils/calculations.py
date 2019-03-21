@@ -19,3 +19,4 @@ def euclidean_distance_matrix(X, x):
     """
     distance_matrix = np.sqrt(np.sum((X - x) ** 2, axis=1))
     return distance_matrix
+
